@@ -1,19 +1,17 @@
 import os
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template
+from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 import traceback
 
-from src.pipeline.predict_pipeline import CustomData, PredictPipeline
-
-# Create Flask app
 app = Flask(__name__)
 
-# Load the ML pipeline once on startup
+# Load pipeline once
 try:
     pipeline = PredictPipeline()
 except Exception as e:
-    print("Error loading PredictPipeline:", e)
-    traceback.print_exc()
     pipeline = None
+    print("Error loading pipeline:", e)
+    traceback.print_exc()
 
 @app.route("/")
 def index():
@@ -24,8 +22,7 @@ def predict_datapoint():
     try:
         if request.method == "GET":
             return render_template("home.html")
-        elif request.method == "POST":
-            # Get form data
+        else:
             data = CustomData(
                 gender=request.form.get("gender"),
                 race_ethnicity=request.form.get("ethnicity"),
@@ -33,20 +30,14 @@ def predict_datapoint():
                 lunch=request.form.get("lunch"),
                 test_preparation_course=request.form.get("test_preparation_course"),
                 reading_score=float(request.form.get("reading_score")),
-                writing_score=float(request.form.get("writing_score")),
+                writing_score=float(request.form.get("writing_score"))
             )
-
-            pred = data.get_data_as_dataframe()
-            print(pred)
-
+            pred_df = data.get_data_as_dataframe()
             if pipeline is None:
-                return render_template("home.html", results="Error: model not loaded")
-
-            results = pipeline.predict(pred)
+                return render_template("home.html", results="Pipeline not loaded")
+            results = pipeline.predict(pred_df)
             return render_template("home.html", results=results[0])
-
     except Exception as e:
-        print("Prediction error:", e)
         traceback.print_exc()
         return render_template("home.html", results=f"Error: {str(e)}")
 

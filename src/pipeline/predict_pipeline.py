@@ -4,34 +4,28 @@ import pandas as pd
 import joblib
 from src.utils import load_object
 from src.exception import CustomException
+import os 
 
 class PredictPipeline:
-
     def __init__(self):
-        pass
+        try:
+            model_path = os.path.join("artifacts", "model.pkl")
+            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
 
-    def predict(self,features):
-           
-           try:
-                 model_path="artifacts/model.pkl"
+            self.model = load_object(model_path)
+            self.preprocessor = load_object(preprocessor_path)
+            print("Pipeline loaded successfully")
+        except Exception as e:
+            raise CustomException(f"Error loading pipeline: {e}", sys)
 
-
-                 preprocessor_path="artifacts/preprocessor.pkl"
-
-
-                 model=load_object(model_path)
-                 
-                 preprocessor=load_object(preprocessor_path)
-
-                 data_scaled=preprocessor.transform(features)
-                 preds=model.predict(data_scaled)
-                 return preds
-                 
-           except Exception as e:
-                 raise CustomException(e,sys)
-                 
-
-           
+    def predict(self, features):
+        try:
+            data_scaled = self.preprocessor.transform(features)
+            preds = self.model.predict(data_scaled)
+            return preds
+        except Exception as e:
+            raise CustomException(e, sys)
+      
 
            
 
