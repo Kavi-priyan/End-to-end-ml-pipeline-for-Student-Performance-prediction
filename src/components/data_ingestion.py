@@ -23,7 +23,9 @@ class DataIngestion:
         logging.info("Entered the data ingestion method or component")
         try:
             # Use forward slashes to fix the Syntax Warning
-            df = pd.read_csv('src/notebook/data/stud.csv')
+            data_path = os.path.join("src", "notebook", "data", "stud.csv")
+            df = pd.read_csv(data_path)
+
             logging.info('Read the dataset as dataframe')
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)

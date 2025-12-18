@@ -6,7 +6,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
+import numpy as np
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
