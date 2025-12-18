@@ -2,9 +2,11 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+# Copy everything first
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "api.app:app"]
+# Then install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Start the app
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]
