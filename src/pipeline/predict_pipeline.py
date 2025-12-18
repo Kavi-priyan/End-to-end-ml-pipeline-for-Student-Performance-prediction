@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import pandas as pd
-
+import joblib
 from src.utils import load_object
 from src.exception import CustomException
 
@@ -13,12 +13,14 @@ class PredictPipeline:
     def predict(self,features):
            
            try:
-                 model_path="artifacts\model.pkl"
+                 model_path="artifacts/model.pkl"
 
-                 preprocessor_path="artifacts\preprocessor.pkl"
+
+                 preprocessor_path="artifacts/preprocessor.pkl"
 
 
                  model=load_object(model_path)
+                 
                  preprocessor=load_object(preprocessor_path)
 
                  data_scaled=preprocessor.transform(features)
