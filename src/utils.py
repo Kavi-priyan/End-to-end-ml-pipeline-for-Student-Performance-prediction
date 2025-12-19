@@ -60,10 +60,20 @@ def save_object(file_path,obj):
 
 def load_object(file_path):
     try:
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        MODEL_PATH = os.path.join(BASE_DIR,file_path) 
-        with open(file_path, "rb") as file_obj:
-            return dill.load(file_obj)
+        # file_path should be an absolute or relative path from project root
+        # Try the path as-is first
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as file_obj:
+                return dill.load(file_obj)
+        else:
+            # If not found, try relative to utils.py location
+            BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            MODEL_PATH = os.path.join(BASE_DIR, file_path)
+            if os.path.exists(MODEL_PATH):
+                with open(MODEL_PATH, "rb") as file_obj:
+                    return dill.load(file_obj)
+            else:
+                raise FileNotFoundError(f"Model file not found at {file_path} or {MODEL_PATH}")
 
     except Exception as e:
         raise CustomException(e, sys)

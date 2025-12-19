@@ -9,8 +9,21 @@ import os
 class PredictPipeline:
     def __init__(self):
         try:
-            model_path = os.path.join("artifacts", "model.pkl")
-            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+            # Get the base directory (where app.py is located)
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            model_path = os.path.join(base_dir, "artifacts", "model.pkl")
+            preprocessor_path = os.path.join(base_dir, "artifacts", "preprocessor.pkl")
+            
+            # Also try relative path as fallback
+            if not os.path.exists(model_path):
+                model_path = os.path.join("artifacts", "model.pkl")
+            if not os.path.exists(preprocessor_path):
+                preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+            
+            print(f"Loading model from: {model_path}")
+            print(f"Loading preprocessor from: {preprocessor_path}")
+            print(f"Model file exists: {os.path.exists(model_path)}")
+            print(f"Preprocessor file exists: {os.path.exists(preprocessor_path)}")
 
             self.model = load_object(model_path)
             self.preprocessor = load_object(preprocessor_path)

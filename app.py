@@ -6,11 +6,15 @@ import traceback
 app = Flask(__name__)
 
 # Load pipeline once
+pipeline = None
+pipeline_error = None
 try:
     pipeline = PredictPipeline()
+    print("✓ Pipeline loaded successfully")
 except Exception as e:
     pipeline = None
-    print("Error loading pipeline:", e)
+    pipeline_error = str(e)
+    print("✗ Error loading pipeline:", e)
     traceback.print_exc()
 
 @app.route("/")
@@ -19,7 +23,28 @@ def index():
 
 @app.route("/health")
 def health():
-    return {"status": "healthy", "pipeline_loaded": pipeline is not None}, 200
+    """Health check endpoint for Render"""
+    import os
+    
+    # Check if artifacts exist
+    model_path = os.path.join("artifacts", "model.pkl")
+    preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+    model_exists = os.path.exists(model_path)
+    preprocessor_exists = os.path.exists(preprocessor_path)
+    
+    response = {
+        "status": "healthy",
+        "pipeline_loaded": pipeline is not None,
+        "model_file_exists": model_exists,
+        "preprocessor_file_exists": preprocessor_exists,
+        "current_directory": os.getcwd(),
+        "files_in_artifacts": os.listdir("artifacts") if os.path.exists("artifacts") else "artifacts folder not found"
+    }
+    
+    if pipeline_error:
+        response["pipeline_error"] = pipeline_error
+    
+    return response, 200
 
 @app.route("/predict_datapoint", methods=["GET", "POST"])
 def predict_datapoint():
