@@ -25,7 +25,7 @@ class PredictPipeline:
             return preds
         except Exception as e:
             raise CustomException(e, sys)
-      
+
 
            
 

@@ -60,8 +60,10 @@ def save_object(file_path,obj):
 
 def load_object(file_path):
     try:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        MODEL_PATH = os.path.join(BASE_DIR,file_path) 
         with open(file_path, "rb") as file_obj:
-            return pickle.load(file_obj)
+            return dill.load(file_obj)
 
     except Exception as e:
         raise CustomException(e, sys)
