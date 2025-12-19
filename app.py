@@ -17,6 +17,11 @@ except Exception as e:
 def index():
     return render_template("index.html")
 
+@app.route("/health")
+def health():
+    """Health check endpoint for Render"""
+    return {"status": "healthy", "pipeline_loaded": pipeline is not None}, 200
+
 @app.route("/predict_datapoint", methods=["GET", "POST"])
 def predict_datapoint():
     try:
